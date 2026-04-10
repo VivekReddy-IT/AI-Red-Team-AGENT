@@ -67,7 +67,8 @@ When you first open the scanner, you are presented with two input options:
 - **Scan Target:** Start a fresh vulnerability crawl on a new URL.
 - **Load Report:** Instantly reload a previous scan via its Private Report UUID.
 
-![Dashboard Preview](/home/viv/.gemini/antigravity/brain/b4efdda3-296d-4bef-a96d-a1cd742b39d3/media__1775845889375.png)
+![Dashboard Preview] <img width="1534" height="868" alt="Project proof" src="https://github.com/user-attachments/assets/518f4eb4-be22-472a-95a8-95e69f5ca853" />
+
 
 ### 2. Live Scan execution
 Paste a vulnerable test URL into the `Target` box (e.g. `http://testphp.vulnweb.com`). As soon as you click *Scan Target*, the system passes the URL to our FastAPI backend. The UI presents a loading spinner while the crawler identifies forms, and the tester blasts safe payloads mapping for SQLi, XSS, Command Injection, and Missing Headers.
