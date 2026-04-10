@@ -1,146 +1,83 @@
-# AI Red Team Agent (Safe Mode)
+# AI Red Team Agent
 
-A mini automated ethical hacking pipeline:
+A simple automated web security scanner that finds input forms, attempts SQL Injection and XSS payloads, and generates AI-driven explanations for any vulnerabilities found using Anthropic Claude.
 
-- **Recon**: `nmap` (service/port scan)
-- **Exploit checks**: `sqlmap` (conservative settings)
-- **Web scan**: **OWASP ZAP Baseline** (passive + spider) via **Docker fallback**
-- **AI report**: Ollama (optional) + strict JSON schema fallback
-- **History**: saves every scan as JSON under `results/`
+## Architecture
 
-This project enforces **Safe Mode**: only `localhost`/loopback and an allowlist of known test hosts are allowed.
+This project was built from scratch following an AI Red Teaming blueprint:
 
-## Requirements
+- `backend/crawler.py` - Locates injectable endpoints and checks for CSRF tokens vs Security Headers.
+- `backend/tester.py` - Fires payloads for SQLi, XSS, Path Traversal (LFI), Command Injection, and Open Redirects.
+- `backend/storage.py` - Persists reports safely and provides secure UUID-based private loading.
+- `backend/reporter.py` - Passes triggers to Anthropic Claude 3 for simple, natural language explanations.
+- `backend/main.py` - FastAPI orchestration routing.
+- `frontend/index.html` - Clean frontend application with "Private UUID" loading support.
 
-- Ubuntu 24.04+ recommended
-- Python 3.12+
-- Tools:
-  - `nmap`
-  - `git`
-  - `docker` (for ZAP baseline fallback)
-  - sqlmap cloned locally (this project expects `/home/<user>/sqlmap/sqlmap.py`)
-- Optional:
-  - Ollama (`ollama` + a model like `llama3`)
+## Installation & Setup
 
-## Install (system tools)
-
+1. **Change directory to the project root:**
 ```bash
-sudo apt update
-sudo apt install -y nmap git docker.io
-sudo systemctl enable --now docker
+cd "/home/viv/AI Project"
 ```
 
-Allow docker without sudo (recommended), then restart your terminal:
-
-```bash
-sudo usermod -aG docker $USER
-newgrp docker
-docker ps >/dev/null && echo docker_without_sudo_ok
-```
-
-## Install sqlmap (clone)
-
-```bash
-git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /home/$USER/sqlmap
-```
-
-If you cloned it somewhere else, set:
-
-```bash
-export SQLMAP_PATH="/absolute/path/to/sqlmap.py"
-```
-
-## Optional: Install & run Ollama
-
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-sudo systemctl enable --now ollama
-ollama pull llama3
-```
-
-## Python dependencies
-
-This project uses:
-
-- FastAPI
-- Uvicorn
-- Requests
-- Pydantic
-
-Install them (recommended in a virtualenv). If you can’t create a venv on Ubuntu, you can use `--break-system-packages` as a last resort.
-
+2. **Setup virtual environment (Optional but Recommended):**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
+```
+
+3. **Install Dependencies:**
+```bash
 pip install -r requirements.txt
 ```
 
-## Run the API
-
-From the project folder:
-
+4. **Configure Settings:**
+Edit the `.env` file to include your actual API key.
 ```bash
-cd "/home/viv/AI Project"
-/home/viv/.local/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+```
+*(If you leave the default, the scanner will still run, but you won't get AI explanations for vulnerabilities.)*
+
+## Running the Application
+
+1. **Start the FastAPI backend server:**
+```bash
+# Needs to run from the security-scanner root folder
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+This starts the backend at `http://127.0.0.1:8000`.
+
+2. **Open the Frontend UI:**
+You can just double click `frontend/index.html` or open it in your browser directly:
+```bash
+# Example assuming file is available locally
+google-chrome frontend/index.html
 ```
 
-Check it:
+3. **Use the Application:**
+Paste a test URL (e.g., `http://testphp.vulnweb.com/`) into the input field and click "Scan Target".
+Once the scan is done, a **Private Report UUID** will appear above your results. Save it, and you can reload the dashboard with that ID forever without repeating the scan!
 
-```bash
-curl -s http://127.0.0.1:8000/health
-```
+## UI & Usage Guide
 
-## Use the API
+The AI Red Team Agent provides a clean, Vanillia JS dark-mode frontend that makes navigating vulnerabilities effortless.
 
-Queue a scan:
+### 1. The Dashboard (Empty State)
+When you first open the scanner, you are presented with two input options:
+- **Scan Target:** Start a fresh vulnerability crawl on a new URL.
+- **Load Report:** Instantly reload a previous scan via its Private Report UUID.
 
-```bash
-curl -s -X POST http://127.0.0.1:8000/scan \
-  -H "Content-Type: application/json" \
-  -d '{"target":"testphp.vulnweb.com/listproducts.php?cat=1"}'
-```
+![Dashboard Preview](/home/viv/.gemini/antigravity/brain/b4efdda3-296d-4bef-a96d-a1cd742b39d3/media__1775845889375.png)
 
-Poll a scan:
+### 2. Live Scan execution
+Paste a vulnerable test URL into the `Target` box (e.g. `http://testphp.vulnweb.com`). As soon as you click *Scan Target*, the system passes the URL to our FastAPI backend. The UI presents a loading spinner while the crawler identifies forms, and the tester blasts safe payloads mapping for SQLi, XSS, Command Injection, and Missing Headers.
 
-```bash
-curl -s http://127.0.0.1:8000/scan/<scan_id>
-```
+![Scanning a Target](/home/viv/.gemini/antigravity/brain/b4efdda3-296d-4bef-a96d-a1cd742b39d3/media__1775845889410.png)
 
-List recent scans:
+### 3. Understanding the Report
+Once complete, the UI instantly populates a dynamic table.
+- **Private Report UUID:** A securely generated token (e.g. `341b9a65...`) appears. You can save this to revisit your exact findings later without running another heavy scan.
+- **Severity Tagging:** Missing headers or warnings get coded with `Low/Medium` severity logic, while critical injection points receive `High` tags.
+- **AI Explanation & Fix:** If you configure the `.env` with a valid Anthropic key, Claude-3 will explicitly describe *how* to patch the code that caused the payload to succeed!
 
-```bash
-curl -s http://127.0.0.1:8000/scans
-```
-
-Open dashboard:
-
-- `http://127.0.0.1:8000/dashboard`
-
-## Outputs
-
-All scan jobs are persisted to:
-
-- `results/<scan_id>.json`
-
-The report (`ai_report`) is always **strict JSON** with keys:
-
-- `title`
-- `severity` (`Low|Medium|High`)
-- `executive_summary`
-- `findings[]`
-- `recommended_next_steps[]`
-
-## Safe Mode allowlist
-
-Safe mode validation lives in `app/utils/safety.py`.
-
-If you want to add more approved targets, extend `ALLOWED_HOSTS` there.
-
-## Legal / Ethics
-
-Only scan:
-
-- Your own systems
-- Explicitly authorized environments
-- Known legal test targets
-
+![Reviewing Results](/home/viv/.gemini/antigravity/brain/b4efdda3-296d-4bef-a96d-a1cd742b39d3/media__1775845889438.png)
