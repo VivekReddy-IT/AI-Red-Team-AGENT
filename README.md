@@ -73,7 +73,8 @@ When you first open the scanner, you are presented with two input options:
 ### 2. Live Scan execution
 Paste a vulnerable test URL into the `Target` box (e.g. `http://testphp.vulnweb.com`). As soon as you click *Scan Target*, the system passes the URL to our FastAPI backend. The UI presents a loading spinner while the crawler identifies forms, and the tester blasts safe payloads mapping for SQLi, XSS, Command Injection, and Missing Headers.
 
-![Scanning a Target](/home/viv/.gemini/antigravity/brain/b4efdda3-296d-4bef-a96d-a1cd742b39d3/media__1775845889410.png)
+![Scanning a Target] <img width="1534" height="868" alt="Screenshot from 2026-04-10 23-56-24" src="https://github.com/user-attachments/assets/fa70a1e0-7458-4cc4-97fb-d14149cc70fa" />
+
 
 ### 3. Understanding the Report
 Once complete, the UI instantly populates a dynamic table.
@@ -81,4 +82,6 @@ Once complete, the UI instantly populates a dynamic table.
 - **Severity Tagging:** Missing headers or warnings get coded with `Low/Medium` severity logic, while critical injection points receive `High` tags.
 - **AI Explanation & Fix:** If you configure the `.env` with a valid Anthropic key, Claude-3 will explicitly describe *how* to patch the code that caused the payload to succeed!
 
-![Reviewing Results](/home/viv/.gemini/antigravity/brain/b4efdda3-296d-4bef-a96d-a1cd742b39d3/media__1775845889438.png)
+![Reviewing Results] <img width="1534" height="868" alt="Screenshot from 2026-04-11 00-00-56" src="https://github.com/user-attachments/assets/d72a5a41-2fa5-4c7a-a9de-1dddd12b1118" />
+<img width="1534" height="728" alt="Screenshot from 2026-04-11 00-14-07" src="https://github.com/user-attachments/assets/21cf7cbb-b28c-4dfb-8f21-b7fbbefc4b71" />
+
