@@ -105,10 +105,12 @@ Visit the dashboard at `http://localhost:5173`!
 The AI Red Team Platform provides an incredibly sleek, dark-mode React interface.
 
 1. **The Dashboard**: You can start a completely new vulnerability scan or instantaneously load a previous report using its secure **Private UUID**.
-![Dashboard Preview] <img width="1534" height="868" alt="Project proof" src="https://github.com/user-attachments/assets/518f4eb4-be22-472a-95a8-95e69f5ca853" />
+![Dashboard Preview] <img width="1525" height="748" alt="Screenshot from 2026-04-11 23-34-11" src="https://github.com/user-attachments/assets/a72c54c6-3c92-42f2-8152-99f650e34595" />
+
 
 2. **Dynamic Live Scanning**: Paste a vulnerable test URL and execute. The engine presents a CSS-animated pulse radar while the system concurrently spiders, tests, and validates.
-![Scanning a Target] <img width="1534" height="868" alt="Screenshot from 2026-04-10 23-56-24" src="https://github.com/user-attachments/assets/fa70a1e0-7458-4cc4-97fb-d14149cc70fa" />
+![Scanning a Target] <img width="1525" height="748" alt="Screenshot from 2026-04-11 23-34-46" src="https://github.com/user-attachments/assets/333c6fe2-5e27-4ff2-8096-5862d85272e2" />
+
 
 3. **Report View**: The results appear grouped by Severity. Each vulnerability card expands to show:
    - **Target Endpoint & Raw Attack Payload**
