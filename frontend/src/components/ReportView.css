@@ -1,0 +1,225 @@
+.report-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background: transparent;
+  color: #fff;
+  border-color: transparent;
+}
+
+.report-header {
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.report-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-primary);
+}
+
+.header-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.target-url {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.report-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.uuid-pill {
+  background: rgba(99, 102, 241, 0.15);
+  color: #c7d2fe;
+}
+
+.section-title {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.no-findings {
+  text-align: center;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.no-findings p {
+  color: var(--text-muted);
+}
+
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.vuln-card {
+  padding: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border-left: 4px solid transparent;
+}
+
+.vuln-card.sev-high { border-left-color: rgba(239, 68, 68, 0.8); }
+.vuln-card.sev-medium { border-left-color: rgba(245, 158, 11, 0.8); }
+.vuln-card.sev-low { border-left-color: rgba(59, 130, 246, 0.8); }
+
+.vuln-card.expanded {
+  background: rgba(25, 28, 36, 0.9);
+}
+
+.vuln-header {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.vuln-primary-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sev-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.sev-high .sev-icon { color: var(--sev-high-text); }
+.sev-medium .sev-icon { color: var(--sev-medium-text); }
+.sev-low .sev-icon { color: var(--sev-low-text); }
+
+.vuln-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.vuln-secondary-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.sev-badge {
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sev-badge.sev-high { background: var(--sev-high-bg); color: var(--sev-high-text); border: 1px solid var(--sev-high-border); }
+.sev-badge.sev-medium { background: var(--sev-medium-bg); color: var(--sev-medium-text); border: 1px solid var(--sev-medium-border); }
+.sev-badge.sev-low { background: var(--sev-low-bg); color: var(--sev-low-text); border: 1px solid var(--sev-low-border); }
+
+.expand-icon {
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.vuln-body {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.vuln-detail {
+  margin-bottom: 1.25rem;
+}
+
+.vuln-detail h4 {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vuln-detail p {
+  color: #e2e8f0;
+}
+
+.vuln-detail code {
+  display: block;
+  background: rgba(0,0,0,0.4);
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-family: monospace;
+  word-break: break-all;
+  border: 1px solid rgba(255,255,255,0.05);
+  color: #fca5a5;
+}
+
+.ai-explanation {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.ai-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c084fc;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.ai-content {
+  color: #e2e8f0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

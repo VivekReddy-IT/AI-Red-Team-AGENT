@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
+import aiohttp
+import asyncio
 
 from backend.crawler import crawl
-from backend.tester import test_sqli, test_xss, test_path_traversal, test_command_injection, test_open_redirect, test_security_headers, test_csrf
+from backend.tester import execute_yaml_templates, test_open_redirect, test_security_headers, test_csrf
 from backend.reporter import generate_report
-from backend.storage import save_report, load_report
+from backend.storage import save_report, load_report, get_all_reports
 
 app = FastAPI(title="AI Red Team Agent API")
 
@@ -20,6 +22,7 @@ app.add_middleware(
 
 class ScanRequest(BaseModel):
     url: str
+    cookie: str | None = None
 
 @app.post("/scan")
 async def scan_url(request: ScanRequest):
@@ -30,21 +33,28 @@ async def scan_url(request: ScanRequest):
         
     try:
         # Step 1: Crawl
-        crawl_results = crawl(target_url)
+        crawl_results = await crawl(target_url, max_depth=1, cookie=request.cookie)
         forms = crawl_results.get("forms", [])
         
+        # Combine authentication cookie if provided
+        session_headers = {}
+        if request.cookie:
+            session_headers["Cookie"] = request.cookie
+            
         # Step 2: Test basic vulnerabilities
-        sqli_findings = test_sqli(target_url, forms)
-        xss_findings = test_xss(target_url, forms)
-        lfi_findings = test_path_traversal(target_url, forms)
-        cmd_findings = test_command_injection(target_url, forms)
-        redirect_findings = test_open_redirect(target_url, forms)
+        async with aiohttp.ClientSession(headers=session_headers) as session:
+            outcomes = await asyncio.gather(
+                execute_yaml_templates(session, target_url, forms),
+                test_open_redirect(session, target_url, forms)
+            )
+        
+        yaml_findings, redirect_findings = outcomes
         csrf_findings = test_csrf(target_url, forms)
         
         headers = crawl_results.get("security_headers", {})
         header_findings = test_security_headers(target_url, headers)
         
-        all_raw_findings = sqli_findings + xss_findings + lfi_findings + cmd_findings + redirect_findings + header_findings + csrf_findings
+        all_raw_findings = yaml_findings + redirect_findings + header_findings + csrf_findings
         
         # Step 3: AI Reporting layer
         final_findings = generate_report(all_raw_findings)
@@ -66,6 +76,10 @@ async def scan_url(request: ScanRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/reports")
+async def fetch_all_reports():
+    return get_all_reports()
 
 @app.get("/report/{report_id}")
 async def get_report(report_id: str):

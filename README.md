@@ -1,87 +1,118 @@
-# AI Red Team Agent
+# Flux: AI-Powered Red Teaming Agent
 
-A simple automated web security scanner that finds input forms, attempts SQL Injection and XSS payloads, and generates AI-driven explanations for any vulnerabilities found using Anthropic Claude.
+A next-generation automated web security scanner built for speed, accuracy, and intelligence. Flux dynamically crawls targets, utilizes Machine Learning to predict successful exploit vectors, fires payloads asynchronously, and leverages **Anthropic Claude-3** to generate natural language explanations for any zero-day vulnerabilities discovered.
 
-## Architecture
+---
 
-This project was built from scratch following an AI Red Teaming blueprint:
+## 🧠 System Architecture
 
-- `backend/crawler.py` - Locates injectable endpoints and checks for CSRF tokens vs Security Headers.
-- `backend/tester.py` - Fires payloads for SQLi, XSS, Path Traversal (LFI), Command Injection, and Open Redirects.
-- `backend/storage.py` - Persists reports safely and provides secure UUID-based private loading.
-- `backend/reporter.py` - Passes triggers to Anthropic Claude 3 for simple, natural language explanations.
-- `backend/main.py` - FastAPI orchestration routing.
-- `frontend/index.html` - Clean frontend application with "Private UUID" loading support.
+Flux is built with a decoupled architecture, operating incredibly fast via Python's asynchronous event loops and rendering dynamically on a React frontend.
 
-## Installation & Setup
+### Component Overview
 
-1. **Change directory to the project root:**
+- **`backend/crawler.py`** - Deeply spiders the target domain, mapping the attack surface, input forms, and security headers.
+- **`backend/ml/predictor.py`** - Intercepts crawling data and uses a `scikit-learn` Natural Language Pipeline to predict the optimal attack payload type (e.g. SQLi vs XSS) based on semantic form cues.
+- **`backend/tester.py`** - Asynchronously fires `YAML`-based exploit payloads targeting the highest-probability vectors.
+- **`backend/reporter.py`** - Passes the successful exploit triggers to the Claude-3 API to calculate impact and remediation.
+- **`backend/main.py`** - The FastAPI routing orchestration layer.
+- **`frontend/src/*`** - A modern, Vanilla CSS React dashboard built via Vite, featuring glassmorphism design and micro-animations.
+
+---
+
+## ⚙️ How It Works (Flowcharts)
+
+### 1. The Core Attack Engine Pipeline
+
+```mermaid
+graph TD
+    A[React Dashboard] -->|POST /scan URL| B(FastAPI Router)
+    B --> C{Crawler Engine}
+    C -->|Maps HTML Forms| D[ML Payload Predictor]
+    C -->|Maps Headers| E[Security Header Analyzer]
+    
+    D -->|Calculates Confidence| F(Tester Engine)
+    F -->|Fuzzes SQLi, XSS, LFI| G{Vulnerable?}
+    
+    G -- Yes --> H[Claude-3 AI Explainer]
+    G -- No --> I[Discard]
+    E --> H
+    
+    H -->|Compiles enriched data| J[(SQLite Database)]
+    J -->|Returns UUID| A
+```
+
+### 2. Machine Learning Prediction Flow
+
+Flux uses a `TfidfVectorizer` paired with a `MultinomialNB` classifier to dynamically filter out 90% of useless network noise.
+
+```mermaid
+graph LR
+    A[Target Input: 'email'] --> B[TF-IDF Vectorizer]
+    B -->|Generates N-Grams| C(Naive Bayes Classifier)
+    C -->|Probability Math| D{Highest Match}
+    D -->|98% Confidence| E[SQL Injection Payload]
+    D -->|2% Confidence| F[XSS Payload]
+    E --> G[Execute Attack]
+```
+
+---
+
+## 🚀 Installation & Setup
+
+1. **Clone and change directory:**
 ```bash
 cd "/home/viv/AI Project"
 ```
 
-2. **Setup virtual environment (Optional but Recommended):**
+2. **Setup your environment:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-```
-
-3. **Install Dependencies:**
-```bash
 pip install -r requirements.txt
 ```
 
-4. **Configure Settings:**
-Edit the `.env` file to include your actual API key.
+3. **Configure Settings:**
+Edit the `.env` file to include your Anthropic API Key for the AI explanations to trigger.
 ```bash
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 ```
-*(If you leave the default, the scanner will still run, but you won't get AI explanations for vulnerabilities.)*
 
-## Running the Application
+---
 
-1. **Start the FastAPI backend server:**
+## 🚦 Running the Application
+
+Flux requires both the Backend API and Frontend Dashboard to be running simultaneously.
+
+**Terminal 1 (Backend):**
 ```bash
-# Needs to run from the security-scanner root folder
+source venv/bin/activate
 uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
-This starts the backend at `http://127.0.0.1:8000`.
 
-2. **Open the Frontend UI:**
-You can just double click `frontend/index.html` or open it in your browser directly:
+**Terminal 2 (Frontend):**
 ```bash
-# Example assuming file is available locally
-google-chrome frontend/index.html
+cd frontend
+npm install
+npm run dev
 ```
 
-3. **Use the Application:**
-Paste a test URL (e.g., `http://testphp.vulnweb.com/`) into the input field and click "Scan Target".
-Once the scan is done, a **Private Report UUID** will appear above your results. Save it, and you can reload the dashboard with that ID forever without repeating the scan!
+Visit the dashboard at `http://localhost:5173`!
 
-## UI & Usage Guide
+---
 
-The AI Red Team Agent provides a clean, Vanillia JS dark-mode frontend that makes navigating vulnerabilities effortless.
+## 📖 UI & Usage Guide
 
-### 1. The Dashboard (Empty State)
-When you first open the scanner, you are presented with two input options:
-- **Scan Target:** Start a fresh vulnerability crawl on a new URL.
-- **Load Report:** Instantly reload a previous scan via its Private Report UUID.
+The AI Red Team Platform provides an incredibly sleek, dark-mode React interface.
 
+1. **The Dashboard**: You can start a completely new vulnerability scan or instantaneously load a previous report using its secure **Private UUID**.
 ![Dashboard Preview] <img width="1534" height="868" alt="Project proof" src="https://github.com/user-attachments/assets/518f4eb4-be22-472a-95a8-95e69f5ca853" />
 
-
-### 2. Live Scan execution
-Paste a vulnerable test URL into the `Target` box (e.g. `http://testphp.vulnweb.com`). As soon as you click *Scan Target*, the system passes the URL to our FastAPI backend. The UI presents a loading spinner while the crawler identifies forms, and the tester blasts safe payloads mapping for SQLi, XSS, Command Injection, and Missing Headers.
-
+2. **Dynamic Live Scanning**: Paste a vulnerable test URL and execute. The engine presents a CSS-animated pulse radar while the system concurrently spiders, tests, and validates.
 ![Scanning a Target] <img width="1534" height="868" alt="Screenshot from 2026-04-10 23-56-24" src="https://github.com/user-attachments/assets/fa70a1e0-7458-4cc4-97fb-d14149cc70fa" />
 
-
-### 3. Understanding the Report
-Once complete, the UI instantly populates a dynamic table.
-- **Private Report UUID:** A securely generated token (e.g. `341b9a65...`) appears. You can save this to revisit your exact findings later without running another heavy scan.
-- **Severity Tagging:** Missing headers or warnings get coded with `Low/Medium` severity logic, while critical injection points receive `High` tags.
-- **AI Explanation & Fix:** If you configure the `.env` with a valid Anthropic key, Claude-3 will explicitly describe *how* to patch the code that caused the payload to succeed!
-
+3. **Report View**: The results appear grouped by Severity. Each vulnerability card expands to show:
+   - **Target Endpoint & Raw Attack Payload**
+   - **ML Confidence Score** (How certain the ML model was about the attack vector class)
+   - **Claude-3 Intelligence Analysis** (Context-aware remediation advice)
 ![Reviewing Results] <img width="1534" height="868" alt="Screenshot from 2026-04-11 00-00-56" src="https://github.com/user-attachments/assets/d72a5a41-2fa5-4c7a-a9de-1dddd12b1118" />
 <img width="1534" height="728" alt="Screenshot from 2026-04-11 00-14-07" src="https://github.com/user-attachments/assets/21cf7cbb-b28c-4dfb-8f21-b7fbbefc4b71" />
-

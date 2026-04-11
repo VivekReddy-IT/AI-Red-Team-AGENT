@@ -1,0 +1,8 @@
+name: OS Command Injection
+severity: Critical
+payloads:
+  - "; echo 'VULN_CMD_EXEC'"
+  - "| echo 'VULN_CMD_EXEC'"
+  - "`echo 'VULN_CMD_EXEC'`"
+indicators:
+  - "VULN_CMD_EXEC"

@@ -1,0 +1,21 @@
+[
+  {"input_name": "email", "likely_vuln": "SQLi"},
+  {"input_name": "user_id", "likely_vuln": "SQLi"},
+  {"input_name": "search", "likely_vuln": "XSS"},
+  {"input_name": "query", "likely_vuln": "XSS"},
+  {"input_name": "username", "likely_vuln": "SQLi"},
+  {"input_name": "password", "likely_vuln": "SQLi"},
+  {"input_name": "comment", "likely_vuln": "XSS"},
+  {"input_name": "message", "likely_vuln": "XSS"},
+  {"input_name": "feedback", "likely_vuln": "XSS"},
+  {"input_name": "file", "likely_vuln": "Path Traversal"},
+  {"input_name": "path", "likely_vuln": "Path Traversal"},
+  {"input_name": "doc", "likely_vuln": "Path Traversal"},
+  {"input_name": "cmd", "likely_vuln": "Command Injection"},
+  {"input_name": "exec", "likely_vuln": "Command Injection"},
+  {"input_name": "redirect", "likely_vuln": "Open Redirect"},
+  {"input_name": "next", "likely_vuln": "Open Redirect"},
+  {"input_name": "url", "likely_vuln": "Open Redirect"},
+  {"input_name": "id", "likely_vuln": "SQLi"},
+  {"input_name": "category", "likely_vuln": "SQLi"}
+]

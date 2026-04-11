@@ -1,39 +1,75 @@
+import sqlite3
+import uuid
 import json
 import os
-import uuid
-from typing import Dict, Any, Optional
 
-REPORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
+DB_FILE = "scanner.db"
 
-# Ensure the reports directory exists
-os.makedirs(REPORTS_DIR, exist_ok=True)
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS reports (
+            id TEXT PRIMARY KEY,
+            url TEXT,
+            forms_found INTEGER,
+            vulnerabilities TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-def save_report(report_data: Dict[str, Any]) -> str:
-    """
-    Saves the JSON report to disk using a unique UUID to make it private.
-    Returns the UUID string.
-    """
+# Auto-initialize on import
+init_db()
+
+def save_report(data: dict) -> str:
     report_id = str(uuid.uuid4())
-    filepath = os.path.join(REPORTS_DIR, f"{report_id}.json")
+    # vulnerabilities is a list of dicts, we serialize it to json string for DB
+    vulnerabilities = json.dumps(data.get("vulnerabilities", []))
     
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(report_data, f, indent=4)
-        
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO reports (id, url, forms_found, vulnerabilities)
+        VALUES (?, ?, ?, ?)
+    ''', (report_id, data.get("url"), data.get("forms_found", 0), vulnerabilities))
+    conn.commit()
+    conn.close()
     return report_id
 
-def load_report(report_id: str) -> Optional[Dict[str, Any]]:
-    """
-    Retrieves a report by its UUID from the disk.
-    Returns None if not found.
-    """
-    # Quick safety check to prevent traversal
-    if ".." in report_id or "/" in report_id or "\\" in report_id:
-        return None
-        
-    filepath = os.path.join(REPORTS_DIR, f"{report_id}.json")
+def load_report(report_id: str) -> dict:
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT url, forms_found, vulnerabilities, timestamp FROM reports WHERE id = ?", (report_id,))
+    row = cursor.fetchone()
+    conn.close()
     
-    if not os.path.exists(filepath):
-        return None
-        
-    with open(filepath, "r", encoding="utf-8") as f:
-        return json.load(f)
+    if row:
+        return {
+            "report_id": report_id,
+            "url": row[0],
+            "forms_found": row[1],
+            "vulnerabilities": json.loads(row[2]),
+            "timestamp": row[3]
+        }
+    return None
+
+def get_all_reports() -> list:
+    """Returns a high-level summary of all reports for the history dashboard."""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    # Ordered by newest first
+    cursor.execute("SELECT id, url, forms_found, timestamp FROM reports ORDER BY timestamp DESC")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [
+        {
+            "report_id": row[0],
+            "url": row[1],
+            "forms_found": row[2],
+            "timestamp": row[3]
+        }
+        for row in rows
+    ]

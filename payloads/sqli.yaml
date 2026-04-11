@@ -1,0 +1,12 @@
+name: SQL Injection
+severity: High
+payloads:
+  - "' OR 1=1 --"
+  - "' OR 'a'='a"
+  - "1; DROP TABLE users --"
+indicators:
+  - "sql syntax"
+  - "mysql"
+  - "ORA-"
+  - "syntax error"
+  - "unclosed quotation"

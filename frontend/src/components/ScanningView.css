@@ -1,0 +1,111 @@
+.scanning-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+}
+
+.radar-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.radar {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 32px rgba(99, 102, 241, 0.2);
+}
+
+.radar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 70%, rgba(99, 102, 241, 0.8) 100%);
+  animation: spin 2s linear infinite;
+}
+
+.radar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px var(--accent-primary);
+}
+
+.pulse-icon {
+  position: relative;
+  z-index: 10;
+  color: white;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.scanning-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.scanning-target {
+  font-size: 1.125rem;
+  color: var(--accent-primary);
+  margin-bottom: 2rem;
+  font-family: monospace;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.25rem 1rem;
+  border-radius: 1rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-panel);
+  padding: 0.75rem 1.5rem;
+  border-radius: 100px;
+  border: 1px solid var(--border-subtle);
+}
+
+.status-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  min-width: 200px;
+  text-align: left;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}

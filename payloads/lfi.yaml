@@ -1,0 +1,9 @@
+name: Path Traversal (LFI)
+severity: Critical
+payloads:
+  - "../../../../../../../../../../etc/passwd"
+  - "../../../../../../../../../../windows/win.ini"
+indicators:
+  - "root:x:0:0"
+  - "[extensions]"
+  - "fonts.dir"
